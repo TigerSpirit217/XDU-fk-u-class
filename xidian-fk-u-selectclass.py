@@ -58,6 +58,7 @@ def submit_enrollment(clazzId, secretVal):
         return
     has_submitted = True
 
+    # 这里的课程类别也要改，别漏了
     form_data = {
         "clazzType": "TYKC",
         "clazzId": clazzId,
