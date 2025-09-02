@@ -3,7 +3,7 @@ Warning：本项目代码大量使用AI生成！！！
 
 
 
-# ----------xidian-fk-u-class-full.py----------
+# xidian-fk-u-class-full.py
 
 西电选课-课程已满
 
@@ -37,7 +37,7 @@ https://xk.xidian.edu.cn/
 
 
 
-# ----------xidian-fk-u-selectclass.py----------
+# xidian-fk-u-selectclass.py
 
 西电选课自动化脚本
 
@@ -54,11 +54,11 @@ https://xk.xidian.edu.cn/
 
 
 
-# （严重问题 请勿使用）----------xidian-fk-u-PhyExperi.py----------【此部分已删除，详见rubbish.md】
+# （严重问题 请勿使用）xidian-fk-u-PhyExperi.py【此部分已删除，详见rubbish.md】
 
 
 
-# ----------条款----------
+# 条款
 
 任何不会使用的情况，自行查找互联网，或者问AI，发现bug可以提issue，小灯也还在学python，尽力做好。小灯没有义务为其他学校或系统做适配。
 
