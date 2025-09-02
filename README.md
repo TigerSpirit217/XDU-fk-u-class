@@ -22,9 +22,9 @@ http://wlsy.xidian.edu.cn/phyews/student/student.aspx
 
 使用方法：
 
-1. PY编辑器打开源码，按需修改第49行、第180-181行、第186-193行
+1. PY编辑器打开源码，按需修改第52行、第183-184行、第189-196行
 
-2. 第186-193行需要填写四要素：
+2. 第189-196行需要填写四要素：
 
      第一个要素是周次（例如第2周填写2）
 
@@ -32,7 +32,9 @@ http://wlsy.xidian.edu.cn/phyews/student/student.aspx
 
      第三个要素是类别（目前没有很好的获取方法，最好的方法是在 http://wlsy.xidian.edu.cn/phyews/student/addexpe.aspx 打开Web开发者工具（Firefox按F12，不同浏览器有差异），html搜索物理实验，找到这样一行：<img width="1229" height="65" alt="图片" src="https://github.com/user-attachments/assets/b8a6241f-953c-477a-aa0a-0bccaa693800" />value后面跟着的就是类别值）
 
-     第四个要素是具体课程（点开实验项目查询，从上到下依次为B01、B02、B03……），最后一个可不填（推荐填写以便更好地显示结果）
+     第四个要素是具体课程（点开实验项目查询，从上到下依次为B01、B02、B03……）
+
+     最后一个可不填（推荐填写以便更好地显示结果）
 
 4. 保存后运行就会自动尝试选课并输出结果
 
@@ -42,4 +44,4 @@ http://wlsy.xidian.edu.cn/phyews/student/student.aspx
 
 users可以在自己的项目中完全自由使用本软件的全部或任何部分，但不得直接将原始源代码作为商品进行出售或提供有偿分发服务。（防闲鱼专用条款）
 
-其他条款直接参阅Qwen-3的条款就好。
+其他条款直接参阅所使用的AI工具各自的条款就好。
