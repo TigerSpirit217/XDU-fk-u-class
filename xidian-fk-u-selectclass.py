@@ -6,6 +6,8 @@ import urllib.parse
 # 注意：这个程序是AI写的！！！
 # Powered by Qwen-3
 
+# 你需要修改第23行、第25行、第30行、第32行、第45-51行、第64行
+
 # ================== 配置 ==================
 CHECK_URL = "https://xk.xidian.edu.cn/xsxk/elective/clazz/list"
 COURSE_URL = "https://xk.xidian.edu.cn/xsxk/elective/clazz/add"
@@ -58,7 +60,6 @@ def submit_enrollment(clazzId, secretVal):
         return
     has_submitted = True
 
-    # 这里的课程类别也要改，别漏了
     form_data = {
         "clazzType": "TYKC",
         "clazzId": clazzId,
@@ -148,4 +149,4 @@ if __name__ == "__main__":
         if has_submitted:
             print("⏸️ 抢课完成，停止监控。")
             break
-        time.sleep(3)  # 每3秒检查一次
+        time.sleep(1.5)  # 每1.5秒检查一次
