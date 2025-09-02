@@ -3,7 +3,10 @@ from bs4 import BeautifulSoup
 import re
 import time
 
-# 你需要修改第49行、第180-181行、第186-193行
+# 注意：这个程序是AI写的！！！
+# Powered by Deepseek-V3
+
+# 你需要修改第52行、第183-184行、第189-196行
 
 class PhysicsExperimentSystem:
     def __init__(self):
