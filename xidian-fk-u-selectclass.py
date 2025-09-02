@@ -6,7 +6,7 @@ import urllib.parse
 # 注意：这个程序是AI写的！！！
 # Powered by Qwen-3
 
-# 你需要修改第23行、第25行、第30行、第32行、第45-51行、第64行
+# 你需要修改第23行、第25行、第30行、第32行、第45行、第51行、第64行
 
 # ================== 配置 ==================
 CHECK_URL = "https://xk.xidian.edu.cn/xsxk/elective/clazz/list"
@@ -61,7 +61,7 @@ def submit_enrollment(clazzId, secretVal):
     has_submitted = True
 
     form_data = {
-        "clazzType": "TYKC",
+        "clazzType": "****",
         "clazzId": clazzId,
         "secretVal": secretVal
     }
