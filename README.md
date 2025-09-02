@@ -25,9 +25,13 @@ http://wlsy.xidian.edu.cn/phyews/student/student.aspx
 1. PY编辑器打开源码，按需修改第49行、第180-181行、第186-193行
 
 2. 第186-193行需要填写四要素：
+
      第一个要素是周次（例如第2周填写2）
+
      第二个要素是时间（格式是周次+排序，例如周一下午是1B，周四晚上是4C）
+
      第三个要素是类别（目前没有很好的获取方法，最好的方法是在 http://wlsy.xidian.edu.cn/phyews/student/addexpe.aspx 打开Web开发者工具（Firefox按F12，不同浏览器有差异），html搜索物理实验，找到这样一行： <option selected="selected" value="7001">物理实验2</option>  ，value后面跟着的就是类别值）
+
      第四个要素是具体课程（点开实验项目查询，从上到下依次为B01、B02、B03……），最后一个可不填（推荐填写以便更好地显示结果）
 
 3. 保存后运行就会自动尝试选课并输出结果
