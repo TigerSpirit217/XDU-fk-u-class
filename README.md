@@ -7,29 +7,21 @@ Warning：本项目代码大量使用AI生成！！！
     Fun_Class.py用于通识选修课，因为不用抢课而是抽签，所以只提供补选的代码，可以反复查询这门课有没有空位，有则尝试申请（不会帮你退掉的冲突课程）
 
 # 全新的使用方法：
-1. 使用任意的PY编辑器打开脚本文件
-2. 填好快速配置区域内的一切信息（均以*****标注）：（如下，因为cookie和浏览器绑定，所以请不要关闭浏览器！）
+### 1. 使用任意的PY编辑器打开脚本文件
+### 2. 填好快速配置区域内的一切信息（均以*****标注）：（如下，因为cookie和浏览器绑定，所以请不要关闭浏览器！）
 
   进入选课界面并登录。
-      （1）BatchID就在你的浏览器地址栏
-      
-      <img width="732" height="69" alt="屏幕截图 2026-01-18 230036" src="https://github.com/user-attachments/assets/0d6110b7-dd64-4fe5-b2b6-0e5211c87311" />
-      
-      （2）打开开发者工具（Firefox按F12，Edge按Ctrl+Shift+I）切换到网络(Network)页，然后点击“搜索”按钮
-      开发者工具栏将有新内容显示，单击打开并切换到“消息头”（“标头”）页，下翻到“请求头”部分，这里有余下的三项内容
-      
-      <img width="970" height="676" alt="屏幕截图 2026-01-18 230845" src="https://github.com/user-attachments/assets/5b6450c0-1b33-4360-b573-700460f411dc" />
-      
-      现在切换到“请求”页，你可以看到teachingClassType
-      
-      <img width="965" height="335" alt="屏幕截图 2026-01-18 232059" src="https://github.com/user-attachments/assets/9a6c032b-d406-4e67-9882-52a6e5851b14" />
-      
-      （3）填写你的课程信息：留在开发者工具的网络页，现在就申请一次选课！（当然因为选课还没开始所以是选不到的）
-      开发者工具栏将有新内容显示，单击打开并切换到“请求”页，你可以看到clazzType
-      
-      <img width="963" height="319" alt="屏幕截图 2026-01-18 231722" src="https://github.com/user-attachments/assets/94ffe6c0-b9a6-4802-9efb-b51fedd19e37" />
-      
-      （4）等待时间和定时器见代码内的注释（等待时间默认就是最好的）
+      **（1）BatchID就在你的浏览器地址栏**<br>
+      <img width="732" height="69" alt="屏幕截图 2026-01-18 230036" src="https://github.com/user-attachments/assets/0d6110b7-dd64-4fe5-b2b6-0e5211c87311" /><br>
+      **（2）打开开发者工具（Firefox按F12，Edge按Ctrl+Shift+I）切换到网络(Network)页，然后点击“搜索”按钮
+      开发者工具栏将有新内容显示，单击打开并切换到“消息头”（“标头”）页，下翻到“请求头”部分，这里有余下的三项内容**<br>
+      <img width="970" height="676" alt="屏幕截图 2026-01-18 230845" src="https://github.com/user-attachments/assets/5b6450c0-1b33-4360-b573-700460f411dc" /><br>
+      **现在切换到“请求”页，你可以看到teachingClassType**<br>
+      <img width="965" height="335" alt="屏幕截图 2026-01-18 232059" src="https://github.com/user-attachments/assets/9a6c032b-d406-4e67-9882-52a6e5851b14" /><br>
+      **（3）填写你的课程信息：留在开发者工具的网络页，现在就申请一次选课！（当然因为选课还没开始所以是选不到的）
+      开发者工具栏将有新内容显示，单击打开并切换到“请求”页，你可以看到clazzType**<br>
+      <img width="963" height="319" alt="屏幕截图 2026-01-18 231722" src="https://github.com/user-attachments/assets/94ffe6c0-b9a6-4802-9efb-b51fedd19e37" /><br>
+      **（4）等待时间和定时器见代码内的注释（等待时间默认就是最好的）**
 
    若提示 “管理员变更数据或账号在其他地方登录，请重新登录“ ，说明cookie已失效，请重新获取并填写！
 
