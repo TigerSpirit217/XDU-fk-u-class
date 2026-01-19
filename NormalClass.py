@@ -15,7 +15,9 @@ import urllib.parse
 UserAgentTypeIn = "*****"  # ← 修改这里：你的浏览器UA（请阅读说明）
 AcceptLanguage = "*****"   # ← 修改这里：你的浏览器的AcceptLanguage（请阅读说明）
 BatchID = "*****"          # ← 修改这里：你的batchId
-CookieIsHere = "*****"     # ← 修改这里：你的cookie
+CookieIsHere = "*****"     # ← 修改这里：你的完整cookie
+
+campus = "S"  # ← 南校区就是S，北校区可能是N（？）
 
 # 每个课程是一个字典，支持不同类别和搜索关键词
 # {
@@ -112,7 +114,7 @@ def submit_enrollment(clazzId, secretVal, clazzType, course_key):
     }
     body = urllib.parse.urlencode(form_data)
 
-    for attempt in range(1, 3):  # 最多尝试2次
+    for attempt in range(1, TryTimes+1):  # 尝试次数
         try:
             print(f"🎯 [{course_key}] 第 {attempt} 次抢课请求...")
             response = requests.post(COURSE_URL, headers=HEADERS_COURSE, data=body, timeout=10)
@@ -134,7 +136,7 @@ def submit_enrollment(clazzId, secretVal, clazzType, course_key):
                             print(f"⚠️ [{course_key}] 第 {attempt} 次失败，正在重试...")
                             time.sleep(BetweenTime)
                         else:
-                            print(f"❌ [{course_key}] 两次尝试均失败")
+                            print(f"❌ [{course_key}] 所有尝试均失败")
                 except json.JSONDecodeError:
                     print(f"⚠️ [{course_key}] 非法 JSON 响应:", response.text)
             else:
@@ -160,7 +162,7 @@ def monitor_and_enroll(course_config, course_key):
             "pageNumber": 1,
             "pageSize": 10,
             "orderBy": "",
-            "campus": "S",
+            "campus": campus,
             "KEY": course_config["KEY"]
         }
 
@@ -196,16 +198,12 @@ def monitor_and_enroll(course_config, course_key):
 
         print(f"📊 [{course_key}] 当前 {selected}/{capacity} 人")
 
-        if selected < capacity:
-            print(f"🟢 [{course_key}] 发现空位！尝试抢课 → {clazzId}")
-            success = submit_enrollment(clazzId, secretVal, course_config["clazzType"], course_key)
-            course_status[course_key]["done"] = True
-            if success:
-                print(f"🎉 [{course_key}] 抢课完成！")
-            else:
-                print(f"🚫 [{course_key}] 抢课失败，跳过")
+        success = submit_enrollment(clazzId, secretVal, course_config["clazzType"], course_key)
+        course_status[course_key]["done"] = True
+        if success:
+            print(f"🎉 [{course_key}] 抢课完成！")
         else:
-            print(f"🟡 [{course_key}] 已满员，继续监控...")
+            print(f"🚫 [{course_key}] 抢课失败，跳过")
 
     except Exception as e:
         print(f"❌ [{course_key}] 检查过程异常: {e}")
@@ -222,7 +220,7 @@ if __name__ == "__main__":
     if SetTimeAndStart:
         monitor_time_start()
 
-    print("🔍 开始监控多门课程，发现空位自动抢课...")
+    print("🔍 开始准备对多门课程进行自动抢课...")
 
     # 初始化状态
     for i, course in enumerate(COURSES_TO_ENROLL):

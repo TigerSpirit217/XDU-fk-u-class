@@ -23,10 +23,12 @@ DATA_CHECK = {
     "pageNumber": 1,
     "pageSize": 10,
     "orderBy": "",
-    "campus": "S",
+    "campus": "S",  # ← # ← 南校区就是S，北校区可能是N（？）
     # 这里输入老师的名字，或者课程号码，调用的其实是搜索逻辑
     "KEY": "*******"
 }
+
+ClazzType = "****" # ← 一般与teachingClassType相同
 
 WaitTime = 5  # 每隔几秒检查一次（建议5以上）
 
@@ -76,7 +78,7 @@ def submit_enrollment(clazzId, secretVal):
     has_submitted = True
 
     form_data = {
-        "clazzType": "****",
+        "clazzType": ClazzType,
         "clazzId": clazzId,
         "secretVal": secretVal
     }
@@ -145,8 +147,6 @@ def check_and_enroll():
                 if selected < capacity:
                     print(f"🟢 发现空位！尝试抢课 → {clazzId}")
                     submit_enrollment(clazzId, secretVal)
-                # else:
-                #   print("🚫 已满员，继续监控...")
 
             except Exception as e:
                 print(f"❌ 解析失败: {e}")
