@@ -28,9 +28,9 @@ Warning：本项目代码大量使用AI生成！！！
 
 # 脚本助手&经验之谈 让你的抢课更快一步 <br>
 
-    （1）在浏览器中安装Tampermokey后，导入油猴脚本 西电选课脚本助手+.user.js 并启用 <br>
-    之后每次打开西电的选课页面，你的浏览器UA、AcceptLanguage、BatchID、Cookie会被自动复制到剪切板，直接粘贴在PY脚本对应位置即可.<br>
-    （2）teachingClassType和ClazzType一般是相同的，TYKC是体育课，XGXK是通识教育选修（请用Fun_Class），TJKC是普通课程（大约如此）<br>
+（1）在浏览器中安装Tampermokey后，导入油猴脚本 西电选课脚本助手+.user.js 并启用 <br>
+之后每次打开西电的选课页面，你的浏览器UA、AcceptLanguage、BatchID、Cookie会被自动复制到剪切板，直接粘贴在PY脚本对应位置即可.<br>
+（2）teachingClassType和ClazzType一般是相同的，TYKC是体育课，XGXK是通识教育选修（请用Fun_Class），TJKC是普通课程（大约如此）<br>
 
 
 # 条款
