@@ -13,7 +13,7 @@ class XKHelperApp:
     def __init__(self, root):
         self.root = root
         self.root.title("西电选课脚本")
-        self.root.geometry("850x800")  # 稍微增高以容纳新控件
+        self.root.geometry("650x850")  # 稍微增高以容纳新控件
 
         self.create_paste_parse_section()
 
@@ -221,20 +221,27 @@ class XKHelperApp:
         course_frame = ttk.Frame(self.course_container)
         course_frame.pack(fill='x', pady=2)
 
+        campus_var = tk.StringVar(value="S")
         type_var = tk.StringVar(value="TJKC")
         key_var = tk.StringVar(value="请输入课程关键词")
 
         row = ttk.Frame(course_frame)
         row.pack(fill='x')
 
-        ttk.Label(row, text=f"课程{idx} 类型：").pack(side='left')
+        ttk.Label(row, text=f"课程{idx} 校区：").pack(side='left')
+        ttk.Entry(row, textvariable=campus_var, width=5).pack(side='left', padx=(5, 5))
+
+        ttk.Label(row, text="类型：").pack(side='left')
         ttk.Entry(row, textvariable=type_var, width=12).pack(side='left', padx=(5, 5))
+
         ttk.Label(row, text="关键词：").pack(side='left')
         entry_key = ttk.Entry(row, textvariable=key_var, width=25)
         entry_key.pack(side='left', padx=(5, 5))
 
         # 删除按钮
-        del_btn = ttk.Button(row, text="删除", command=lambda f=course_frame, c=(type_var, key_var): self.remove_normal_course(f, c))
+        del_btn = ttk.Button(row, text="删除", command=lambda f=course_frame, c=(campus_var, type_var,
+                                                                                 key_var): self.remove_normal_course(f,
+                                                                                                                     c))
         del_btn.pack(side='right')
 
         # 绑定焦点事件
@@ -243,6 +250,7 @@ class XKHelperApp:
 
         self.normal_courses.append({
             "frame": course_frame,
+            "campus_var": campus_var,
             "type_var": type_var,
             "key_var": key_var
         })
@@ -283,6 +291,7 @@ class XKHelperApp:
             key = c["key_var"].get().strip()
             if key and key != "请输入课程关键词":
                 courses.append({
+                    "campus": c["campus_var"].get().strip() or "S",  # 默认 S
                     "teachingClassType": c["type_var"].get(),
                     "KEY": key,
                     "clazzType": c["type_var"].get()
@@ -387,28 +396,34 @@ class XKHelperApp:
         self.fun_stop_btn.pack(side='left')
 
     def _create_single_course_ui(self, parent, attr_prefix, title, start_cmd):
-
         course_frame = ttk.LabelFrame(parent, text=title)
         course_frame.pack(fill='x', pady=10, padx=5)
 
-        type_var = tk.StringVar(value="TJKC")
-        key_var = tk.StringVar(value="请输入课程关键词")
+        campus_var = tk.StringVar(value="S")
+        type_var = tk.StringVar(value="TJKC" if attr_prefix != "fun" else "XGKC")  # ← Fun tab 默认 XGKC
+        key_var = tk.StringVar()
 
+        self.__dict__[f"{attr_prefix}_campus"] = campus_var
         self.__dict__[f"{attr_prefix}_type"] = type_var
         self.__dict__[f"{attr_prefix}_key"] = key_var
 
         row = ttk.Frame(course_frame)
         row.pack(fill='x', padx=5, pady=5)
+
+        ttk.Label(row, text="校区：").pack(side='left')
+        ttk.Entry(row, textvariable=campus_var, width=5).pack(side='left', padx=(5, 5))
+
         ttk.Label(row, text="课程类型：").pack(side='left')
         ttk.Entry(row, textvariable=type_var, width=15).pack(side='left', padx=(5, 10))
-        ttk.Label(row, text="关键词：").pack(side='left')
-        entry_key = ttk.Entry(row, textvariable=key_var, width=30)
-        entry_key.pack(side='left', padx=(5, 0))
 
         placeholder = "请输入课程关键词"
         if attr_prefix == "fun":
             placeholder = "请输入通识课关键词"
-            key_var.set(placeholder)
+        key_var.set(placeholder)
+
+        ttk.Label(row, text="关键词：").pack(side='left')
+        entry_key = ttk.Entry(row, textvariable=key_var, width=30)
+        entry_key.pack(side='left', padx=(5, 0))
 
         entry_key.bind("<FocusIn>", lambda e, v=key_var, ph=placeholder: self._clear_placeholder(v, ph))
         entry_key.bind("<FocusOut>", lambda e, v=key_var, ph=placeholder: self._restore_placeholder(v, ph))
@@ -424,7 +439,6 @@ class XKHelperApp:
         placeholder = "请输入课程关键词"
         if prefix == "fun":
             placeholder = "请输入通识课关键词"
-
         if key == placeholder or not key:
             messagebox.showwarning("警告", "请输入有效的课程关键词！")
             return
@@ -432,7 +446,6 @@ class XKHelperApp:
             messagebox.showwarning("警告", "已在运行中！")
             return
 
-        # 验证轮询参数
         try:
             try_times = int(self.__dict__[f"{prefix}_try"].get())
             between_time = float(self.__dict__[f"{prefix}_between"].get())
@@ -451,13 +464,13 @@ class XKHelperApp:
             "AcceptLanguage": self.global_lang.get(),
             "BatchID": self.global_batch.get(),
             "Cookie": self.global_cookie.get(),
+            "campus": (self.__dict__[f"{prefix}_campus"].get().strip() or "S"),  # ← 新增 campus
             "teachingClassType": self.__dict__[f"{prefix}_type"].get(),
             "KEY": key,
             "ClazzType": self.__dict__[f"{prefix}_type"].get(),
             "TryTimes": try_times,
             "BetweenTime": between_time,
-            "campus": "S",
-            "SetTimeAndStart": 0  # 补选/通识不支持定时
+            "SetTimeAndStart": 0
         }
 
         if self.task_active:
@@ -466,15 +479,12 @@ class XKHelperApp:
 
         self.clear_log()
         self.running = True
-        self.task_active = True  # ← 新增
+        self.task_active = True
         self._update_all_start_buttons('disabled')
         self._update_all_stop_buttons('normal')
+
         target = run_normal_full if prefix == "full" else run_fun_class
-        threading.Thread(
-            target=self._run_task_with_cleanup,
-            args=(target, config),
-            daemon=True
-        ).start()
+        threading.Thread(target=self._run_task_with_cleanup, args=(target, config), daemon=True).start()
 
     # ==================== 公共UI组件 ====================
     def _create_global_inputs(self, parent):

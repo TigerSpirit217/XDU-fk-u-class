@@ -21,8 +21,6 @@ def run_normal_full(config: Dict[str, Any], log_callback: Callable[[str], None],
         - KEY (str)
         - ClazzType (str)
 
-        【以下为原脚本有但 GUI 未直接对应，此处设默认值】
-        - WaitTime (int, 轮询间隔秒数，默认 5)
 
     :param log_callback: 日志输出回调函数，如 log(msg)
     :param stop_flag: 停止标志回调，返回 True 表示应停止
@@ -38,14 +36,13 @@ def run_normal_full(config: Dict[str, Any], log_callback: Callable[[str], None],
     KEY = config.get("KEY", "").strip()
     ClazzType = config.get("ClazzType", teachingClassType)
 
-    # WaitTime 在原脚本中是轮询间隔，GUI 中对应的是 BetweenTime 或类似字段
-    # 但在补选 Tab 中，GUI 实际传入的是 "BetweenTime"，这里兼容处理
+    # WaitTime 在原脚本中是轮询间隔，GUI 中对应的是 BetweenTime 或类似字段 但在补选 Tab 中，GUI 实际传入的是 "BetweenTime"，这里兼容处理
     WaitTime = config.get("WaitTime", config.get("BetweenTime", 5))
 
     # ===== 2. 验证 Cookie =====
     match = re.search(r'Authorization=([^;]+)', CookieIsHere)
     if not match:
-        log_callback("❌ 你的 cookie 有问题，请检查是否包含 Authorization 字段。")
+        log_callback("❌ 你的 cookie 有问题，请检查。")
         return
     Author = match.group(1)
 
@@ -75,15 +72,15 @@ def run_normal_full(config: Dict[str, Any], log_callback: Callable[[str], None],
     HEADERS_COURSE = HEADERS_CHECK.copy()
     HEADERS_COURSE["Content-Type"] = "application/x-www-form-urlencoded"
 
-    # ===== 4. 全局状态（防止重复提交）=====
-    has_submitted = False
+    # ===== 4. 状态控制 =====
+    should_stop = False  # 控制主循环是否退出
 
     # ===== 5. 抢课请求函数 =====
     def submit_enrollment(clazzId, secretVal):
-        nonlocal has_submitted
-        if has_submitted or stop_flag():
+        nonlocal should_stop
+        if stop_flag():
             return
-        has_submitted = True
+
         form_data = {
             "clazzType": ClazzType,
             "clazzId": clazzId,
@@ -97,26 +94,40 @@ def run_normal_full(config: Dict[str, Any], log_callback: Callable[[str], None],
                 try:
                     result = response.json()
                     msg = result.get("msg", "未知响应")
-                    log_callback(f"💡 服务器返回: {msg}")
-                    if result.get("code") in [200, "200"]:
+                    code = result.get("code")
+                    log_callback(f"💡 服务器返回: {msg} (code: {code})")
+
+                    if code in [200, "200"]:
                         log_callback("✅ 恭喜！抢课成功！")
-                    elif "已选" in msg or "重复" in msg:
-                        log_callback("⚠️ 你可能已经选过这门课了")
+                        should_stop = True  # 成功，退出
+                    elif "已选" in msg or "重复" in msg or "冲突" in msg:
+                        log_callback("ℹ️ 课程已选或存在冲突，继续监控...")
+                        # 不退出，可能有其他班级或后续变化
                     else:
-                        log_callback("❌ 抢课失败")
+                        log_callback("⚠️ 抢课失败，继续轮询...")
+                        # 如“人数超限”、“不在选课时段”等，可能瞬时失败
                 except json.JSONDecodeError:
                     log_callback(f"⚠️ 非法 JSON 响应: {response.text[:200]}")
+                    # 不视为成功，也不立即退出
             else:
                 log_callback(f"❌ 请求失败，状态码: {response.status_code}")
-                log_callback(f"响应内容: {response.text[:200]}")
+                # 比如 401/403 可能是 cookie 失效，属于严重错误
+                if response.status_code in (401, 403):
+                    log_callback("🛑 Cookie 或权限失效，停止监控。")
+                    should_stop = True
+                else:
+                    log_callback("⚠️ 非致命 HTTP 错误，继续轮询...")
         except requests.RequestException as e:
             log_callback(f"❌ 抢课请求异常: {e}")
+            # 网络问题不退出，继续重试
 
     # ===== 6. 监控与抢课逻辑 =====
     def check_and_enroll():
-        nonlocal has_submitted
-        if has_submitted or stop_flag():
+        nonlocal should_stop
+        if stop_flag():
+            should_stop = True
             return
+
         try:
             DATA_CHECK = {
                 "teachingClassType": teachingClassType,
@@ -131,12 +142,24 @@ def run_normal_full(config: Dict[str, Any], log_callback: Callable[[str], None],
                 try:
                     json_data = response.json()
                     if json_data.get("code") != 200:
-                        log_callback(f"❌ 接口错误: {json_data.get('msg')}")
+                        msg = json_data.get("msg", "")
+                        log_callback(f"❌ 接口错误: {msg}")
+                        # 如果是鉴权错误（如 token 过期），应退出
+                        if "登录" in msg or "认证" in msg or "授权" in msg or "cookie" in msg.lower():
+                            log_callback("🛑 认证失效，停止监控。")
+                            should_stop = True
                         return
+
                     rows = json_data.get("data", {}).get("rows", [])
                     if not rows:
                         log_callback("⚠️ 未查到课程")
                         return
+
+                    tc_list = rows[0].get("tcList", [])
+                    if not tc_list:
+                        log_callback("⚠️ 无教学班信息")
+                        return
+
                     tc_list = rows[0].get("tcList", [])
                     if not tc_list:
                         log_callback("⚠️ 无教学班信息")
@@ -146,17 +169,23 @@ def run_normal_full(config: Dict[str, Any], log_callback: Callable[[str], None],
                     capacity = teaching_class.get("classCapacity")
                     clazzId = teaching_class.get("JXBID") or teaching_class.get("teachingClassID")
                     secretVal = teaching_class.get("secretVal")
+
                     if None in (selected, capacity, clazzId, secretVal):
                         log_callback("⚠️ 数据不完整，跳过")
                         return
+
                     log_callback(f"📊 当前 {selected}/{capacity} 人")
                     if selected < capacity:
                         log_callback(f"🟢 发现空位！尝试抢课 → {clazzId}")
                         submit_enrollment(clazzId, secretVal)
+                    # else: 名额已满，继续轮询（do nothing）
                 except Exception as e:
                     log_callback(f"❌ 解析失败: {e}")
             else:
                 log_callback(f"❌ 请求失败: {response.status_code}")
+                if response.status_code in (401, 403):
+                    log_callback("🛑 访问被拒绝，可能 Cookie 失效。")
+                    should_stop = True
         except requests.RequestException as e:
             log_callback(f"❌ 网络异常: {e}")
 
@@ -166,8 +195,9 @@ def run_normal_full(config: Dict[str, Any], log_callback: Callable[[str], None],
         if stop_flag():
             log_callback("🛑 用户中止，监控已停止。")
             break
-        check_and_enroll()
-        if has_submitted:
-            log_callback("⏸️ 抢课完成，停止监控。")
+        if should_stop:
+            log_callback("⏸️ 抢课成功或发生严重错误，停止监控。")
             break
+
+        check_and_enroll()
         time.sleep(WaitTime)

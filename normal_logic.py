@@ -22,8 +22,6 @@ def run_normal_class(config: Dict[str, Any], log_callback: Callable[[str], None]
         - campus (str, 默认 "S")
         - WaitTime (int, 轮询间隔秒数)
         - courses (List[Dict]): 每个元素含 teachingClassType, KEY, clazzType
-
-        【以下为原脚本有但 GUI 未提供，此处设默认值】
         - TryTimes (int, 默认 2)
         - BetweenTime (int, 默认 1)
         - SetTimeAndStart (int, 默认 0)
@@ -41,6 +39,7 @@ def run_normal_class(config: Dict[str, Any], log_callback: Callable[[str], None]
     CookieIsHere = config.get("Cookie", "").strip()
     campus = config.get("campus", "S")
     courses = config.get("courses", [])
+    WaitTime = config.get("WaitTime", config.get("BetweenTime", 5))
 
     # ===== 2. 预留但 UI 未提供的参数（使用默认值）=====
     TryTimes = config.get("TryTimes", 2)
@@ -53,7 +52,7 @@ def run_normal_class(config: Dict[str, Any], log_callback: Callable[[str], None]
     # ===== 3. 验证 Cookie =====
     match = re.search(r'Authorization=([^;]+)', CookieIsHere)
     if not match:
-        log_callback("❌ 你的 cookie 有问题。")
+        log_callback("❌ 你的 cookie 有问题，请检查。")
         return
     Author = match.group(1)
 
